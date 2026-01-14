@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VBC Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: #e8e9f0;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+
+        .input-section {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .staff-item, .concession-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-name {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .item-value {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .error {
+            color: #d32f2f;
+            text-align: center;
+            padding: 15px;
+            background: #ffebee;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .error.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 VBC Calculator</h1>
+            <p>Event Planning & Management Tools</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('staff')">Staff</button>
+            <button class="tab-button" onclick="switchTab('concessions')">Concessions</button>
+            <button class="tab-button" onclick="switchTab('parking')">Parking</button>
+        </div>
+
+        <div class="content">
+            <!-- STAFF TAB -->
+            <div id="staff" class="tab-content active">
+                <h2>Staff Calculator</h2>
+                <p class="subtitle">Determine staffing needs for your event</p>
+
+                <div class="input-section">
+                    <label for="totalPeople">Total Number of Attendees:</label>
+                    <input type="number" id="totalPeople" placeholder="Enter total number of people" min="0">
+                    <button onclick="calculateStaff()">Calculate Staff Needed</button>
+                </div>
+
+                <div class="error" id="staffError"></div>
+
+                <div class="results" id="staffResults">
+                    <h3>Staff Required:</h3>
+                    <div class="staff-item">
+                        <span class="item-name">👥 Ushers</span>
+                        <span class="item-value" id="ushers">0</span>
+                    </div>
+                    <div class="staff-item">
+                        <span class="item-name">🔒 Stadium Security</span>
+                        <span class="item-value" id="security">0</span>
+                    </div>
+                    <div class="staff-item">
+                        <span class="item-name">🎫 Ticket Takers</span>
+                        <span class="item-value" id="ticketTakers">0</span>
+                    </div>
+                    <div class="staff-item">
+                        <span class="item-name">💳 Parking Cashiers</span>
+                        <span class="item-value" id="parkingCashiers">0</span>
+                    </div>
+                    <div class="staff-item">
+                        <span class="item-name">🚗 Parking Attendants</span>
+                        <span class="item-value" id="parkingAttendants">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONCESSIONS TAB -->
+            <div id="concessions" class="tab-content">
+                <h2>Concessions Calculator</h2>
+                <p class="subtitle">Calculate concession inventory needed</p>
+
+                <div class="input-section">
+                    <label for="numFans">Number of Fans/Attendees:</label>
+                    <input type="number" id="numFans" placeholder="Enter number of fans" min="0">
+                    <button onclick="calculateConcessions()">Calculate Inventory</button>
+                </div>
+
+                <div class="error" id="concessionsError"></div>
+
+                <div class="results" id="concessionsResults">
+                    <h3>Inventory Needed:</h3>
+                    <div class="concession-item">
+                        <span class="item-name">🍿 Popcorn ($5)</span>
+                        <span class="item-value" id="popcorn">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🍦 Ice Cream ($5)</span>
+                        <span class="item-value" id="iceCream">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🥤 Bottled Soda ($5)</span>
+                        <span class="item-value" id="bottledSoda">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🧃 Fountain Drinks ($5)</span>
+                        <span class="item-value" id="fountainDrinks">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🥨 Pretzels ($6)</span>
+                        <span class="item-value" id="pretzels">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🍟 Chips ($6)</span>
+                        <span class="item-value" id="chips">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARKING TAB -->
+            <div id="parking" class="tab-content">
+                <h2>Parking Calculator</h2>
+                <p class="subtitle">Calculate parking lot needs and shuttle buses</p>
+
+                <div class="input-section">
+                    <label for="numAttendees">Number of Attendees:</label>
+                    <input type="number" id="numAttendees" placeholder="Enter number of attendees" min="0">
+                    <button onclick="calculateParking()">Calculate Parking</button>
+                </div>
+
+                <div class="error" id="parkingError"></div>
+
+                <div class="results" id="parkingResults">
+                    <h3>Parking Layout:</h3>
+                    <div class="concession-item">
+                        <span class="item-name">🅿️ Main Lot Capacity</span>
+                        <span class="item-value">8,250</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🛣️ Satellite Lots Needed</span>
+                        <span class="item-value" id="satelliteLots">0</span>
+                    </div>
+                    <div class="concession-item">
+                        <span class="item-name">🚌 Total Buses Required</span>
+                        <span class="item-value" id="totalBuses">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== STAFF CALCULATOR ====================
+        const staffCapacity = {
+            ushers: 400,
+            security: 300,
+            ticketTakers: 100,
+            parkingCashiers: 525,
+            parkingAttendants: 200
+        };
+
+        function calculateStaff() {
+            const totalPeople = parseInt(document.getElementById('totalPeople').value);
+            const errorDiv = document.getElementById('staffError');
+            const resultsDiv = document.getElementById('staffResults');
+
+            if (isNaN(totalPeople) || totalPeople < 0) {
+                errorDiv.textContent = 'Please enter a valid number of people.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            if (totalPeople === 0) {
+                errorDiv.textContent = 'Please enter a number greater than 0.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            errorDiv.classList.remove('visible');
+
+            const ushers = Math.ceil(totalPeople / staffCapacity.ushers);
+            const security = Math.ceil(totalPeople / staffCapacity.security);
+            const ticketTakers = Math.min(Math.ceil(totalPeople / 500), 20);
+            const parkingCashiers = Math.ceil(totalPeople / staffCapacity.parkingCashiers);
+            const parkingAttendants = Math.ceil(totalPeople / staffCapacity.parkingAttendants);
+
+            document.getElementById('ushers').textContent = ushers;
+            document.getElementById('security').textContent = security;
+            document.getElementById('ticketTakers').textContent = ticketTakers;
+            document.getElementById('parkingCashiers').textContent = parkingCashiers;
+            document.getElementById('parkingAttendants').textContent = parkingAttendants;
+
+            resultsDiv.classList.add('visible');
+        }
+
+        document.getElementById('totalPeople').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') calculateStaff();
+        });
+
+        // ==================== CONCESSIONS CALCULATOR ====================
+        function calculateConcessions() {
+            const numFans = parseInt(document.getElementById('numFans').value);
+            const errorDiv = document.getElementById('concessionsError');
+            const resultsDiv = document.getElementById('concessionsResults');
+
+            if (isNaN(numFans) || numFans < 0) {
+                errorDiv.textContent = 'Please enter a valid number of fans.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            if (numFans === 0) {
+                errorDiv.textContent = 'Please enter a number greater than 0.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            errorDiv.classList.remove('visible');
+
+            // Fans/3 for these items
+            const popcorn = Math.ceil(numFans / 3);
+            const iceCream = Math.ceil(numFans / 3);
+            const bottledSoda = Math.ceil(numFans / 3);
+            const fountainDrinks = Math.ceil(numFans / 3);
+
+            // Fans/4 for these items
+            const pretzels = Math.ceil(numFans / 4);
+            const chips = Math.ceil(numFans / 4);
+
+            document.getElementById('popcorn').textContent = popcorn;
+            document.getElementById('iceCream').textContent = iceCream;
+            document.getElementById('bottledSoda').textContent = bottledSoda;
+            document.getElementById('fountainDrinks').textContent = fountainDrinks;
+            document.getElementById('pretzels').textContent = pretzels;
+            document.getElementById('chips').textContent = chips;
+
+            resultsDiv.classList.add('visible');
+        }
+
+        document.getElementById('numFans').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') calculateConcessions();
+        });
+
+        // ==================== PARKING CALCULATOR ====================
+        function calculateParking() {
+            const numAttendees = parseInt(document.getElementById('numAttendees').value);
+            const errorDiv = document.getElementById('parkingError');
+            const resultsDiv = document.getElementById('parkingResults');
+
+            if (isNaN(numAttendees) || numAttendees < 0) {
+                errorDiv.textContent = 'Please enter a valid number of attendees.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            if (numAttendees === 0) {
+                errorDiv.textContent = 'Please enter a number greater than 0.';
+                errorDiv.classList.add('visible');
+                resultsDiv.classList.remove('visible');
+                return;
+            }
+
+            errorDiv.classList.remove('visible');
+
+            const mainLotCapacity = 8250;
+            const satelliteLotCapacity = 1680;
+
+            let satelliteLots = 0;
+            let totalLots = 1; // Main lot
+
+            if (numAttendees > mainLotCapacity) {
+                const remainingAttendees = numAttendees - mainLotCapacity;
+                satelliteLots = Math.ceil(remainingAttendees / satelliteLotCapacity);
+                totalLots = 1 + satelliteLots;
+            }
+
+            const totalBuses = Math.floor(totalLots / 2);
+
+            document.getElementById('satelliteLots').textContent = satelliteLots;
+            document.getElementById('totalBuses').textContent = totalBuses;
+
+            resultsDiv.classList.add('visible');
+        }
+
+        document.getElementById('numAttendees').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') calculateParking();
+        });
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
