@@ -387,6 +387,10 @@
                 <div class="results" id="concessionsResults">
                     <h3>Inventory Needed:</h3>
                     <div class="concession-item">
+                        <span class="item-name">👨‍🍳 Staff Members</span>
+                        <span class="item-value" id="concessionsStaff">0</span>
+                    </div>
+                    <div class="concession-item">
                         <span class="item-name">🍿 Popcorn ($5)</span>
                         <span class="item-value" id="popcorn">0</span>
                     </div>
@@ -551,6 +555,9 @@
 
             errorDiv.classList.remove('visible');
 
+            // Calculate staff needed (each staff member can serve 1000 fans)
+            const concessionsStaff = Math.ceil(numFans / 1000);
+
             // Fans/3 for these items
             const popcorn = Math.ceil(numFans / 3);
             const iceCream = Math.ceil(numFans / 3);
@@ -561,6 +568,7 @@
             const pretzels = Math.ceil(numFans / 4);
             const chips = Math.ceil(numFans / 4);
 
+            document.getElementById('concessionsStaff').textContent = concessionsStaff;
             document.getElementById('popcorn').textContent = popcorn;
             document.getElementById('iceCream').textContent = iceCream;
             document.getElementById('bottledSoda').textContent = bottledSoda;
